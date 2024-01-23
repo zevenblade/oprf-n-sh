@@ -67,24 +67,6 @@ int main()
     f_elm_t (*s2Shares) = malloc(sizeof(f_elm_t) * N_SHARES);
     f_elm_t (*s2SharesServ)[N_SHARES_P_SERVER] = malloc(sizeof(f_elm_t) * N * N_SHARES_P_SERVER);
 
-    f_elm_t(*multMaskServ)[N_BITS][N_SHARES_P_SERVER * N_SHARES_P_SERVER] =
-        malloc(sizeof(f_elm_t) * N * N_BITS * N_SHARES_P_SERVER * N_SHARES_P_SERVER);
-
-    f_elm_t(*aMaskServ)[N_BITS][N_SHARES_P_SERVER * N_SHARES_P_SERVER] =
-        malloc(sizeof(f_elm_t) * N * N_BITS * N_SHARES_P_SERVER * N_SHARES_P_SERVER);
-    f_elm_t(*bMaskServ)[N_BITS][N_SHARES_P_SERVER * N_SHARES_P_SERVER] =
-        malloc(sizeof(f_elm_t) * N * N_BITS * N_SHARES_P_SERVER * N_SHARES_P_SERVER);
-    f_elm_t(*rMaskServ)[N_BITS][N_SHARES_P_SERVER * N_SHARES_P_SERVER] =
-        malloc(sizeof(f_elm_t) * N * N_BITS * N_SHARES_P_SERVER * N_SHARES_P_SERVER);
-
-    f_elm_t(*hashes)[N_BITS][N_SHARES_P_SERVER * N_SHARES_P_SERVER] =
-        malloc(sizeof(f_elm_t) * N * N_BITS * N_SHARES_P_SERVER * N_SHARES_P_SERVER);
-    f_elm_t(*mergedHashes)[N_SHARES * N_SHARES] =
-        malloc(sizeof(f_elm_t) * N_BITS * N_SHARES * N_SHARES);
-    int (*checkHash)[N_SHARES * N_SHARES] = 
-        malloc(sizeof(int) * N_BITS * N_SHARES * N_SHARES);
-    int hashesPass;
-
     f_elm_t(*resSharesServ)[N_BITS]=
         malloc(sizeof(f_elm_t) * N * N_BITS);
     f_elm_t(*expAggrRes)[N_SHARES * N_SHARES] =
@@ -104,14 +86,13 @@ int main()
     strcpy(fileString, "bin/shareMap.bin");
     write_int_arr(fileString, shareMap, N * N_SHARES_P_SERVER);
 
-    f_from_ui(secret, sec_val);
+    f_rand(secret);
     secretSharing(secretShares, secret, N_SHARES);
     secretSharingServers(secretSharesServ, secretShares, shareMap);
 
     for (int i = 0; i < N_BITS; i++)
     {
-        f_from_ui(keys[i], key_val);
-        key_val += 1;
+        f_rand(keys[i]);
     }
     keySharingServersN(keySharesServ, keys, shareMap);
 
@@ -121,7 +102,7 @@ int main()
         write_elm_arr(fileString, keySharesServ[i], N_BITS * N_SHARES_P_SERVER);
     }
 
-    f_from_ui(s2, s2_val);
+    f_rand(s2);
     secretSharing(s2Shares, s2, N_SHARES);
     secretSharingServers(s2SharesServ, s2Shares, shareMap);
 
@@ -187,7 +168,7 @@ int main()
     }
 
     aggregateRowsN(resSharesServ, res);
-    //printResN(res);
+    printResN(res);
 
     calculateOPRF(res, resOPRF);
     // for (int i = 0; i < N_BITS; i++)
@@ -196,8 +177,6 @@ int main()
     // }
     // printf("\n");
 
-    free(hashes);
-    free(mergedHashes);
     free(resSharesServ);
     free(expAggrRes);
 
