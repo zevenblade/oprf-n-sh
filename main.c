@@ -168,7 +168,7 @@ int main()
     }
 
     aggregateRowsN(resSharesServ, res);
-    printResN(res);
+    //printResN(res);
 
     calculateOPRF(res, resOPRF);
     // for (int i = 0; i < N_BITS; i++)
